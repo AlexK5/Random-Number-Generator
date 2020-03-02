@@ -1,9 +1,12 @@
 import random
 import numpy
 import datetime
-import gspread
+# import gspread
 import pandas
 from oauth2client.service_account import ServiceAccountCredentials
+# import os
+# x = ("C:\\Users\\Alexk\\Test Project\\Microsoft VS Code")
+# os.chdir(x)
 
 def thing():
     import json, requests
@@ -18,30 +21,31 @@ def thing():
     def tbaRequest(query):
       r = s.get("http://www.thebluealliance.com/api/v3/" + query)
       return json.loads(r.text)
-    scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    creds = ServiceAccountCredentials.from_json_keyfile_name('client-secret.json', scope)
-    client = gspread.authorize(creds)
+    # scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+    # creds = ServiceAccountCredentials.from_json_keyfile_name('client-secret.json', scope)
+    # client = gspread.authorize(creds)
 
      # Find a workbook by name and open the first sheet
      # Make sure you use the right name here.
-    spr = client.open("Team 1257 Data Scouting Responses: 2019")
-    wks = spr.worksheet('Component OPRs')  # or the correct name of requested worksheet
+    # spr = client.open("Team 1257 Data Scouting Responses: 2019")
+    # wks = spr.worksheet('Component OPRs')  # or the correct name of requested worksheet
      #sheet = client.open("Team 1257 Data Scouting Responses: 2019").TeamRank
      # Extract and print all of the values
-    events = ["2019pahat","2019njfla","2019pawch","2019njbri","2019paphi","2019njtab","2019njski","2019paben","2019mrcmp"]
+    events = ["2020pahat"]
     matches = []
-    #teams = tbaRequest("district/2019fma/teams/keys")
-    teams = list((wks.acell("A2").value).split("', '"))
+    teams = tbaRequest("district/2019fma/teams/keys")
+    #teams = list((wks.acell("A2").value).split("', '"))
     for event in events:
-        games = tbaRequest("event/"+event+"/matches/simple")
+        games = tbaRequest("event/"+event+"/matches")
         for game in games:
             matches.append(game)
     scores = []
     for match in matches:
-        scores.append([match["alliances"]["red"]["team_keys"][0],match["alliances"]["red"]["team_keys"][1],match["alliances"]["red"]["team_keys"][2],match["alliances"]["red"]["score"]-match["alliances"]["blue"]["score"]])
-        scores.append([match["alliances"]["blue"]["team_keys"][0],match["alliances"]["blue"]["team_keys"][1],match["alliances"]["blue"]["team_keys"][2],match["alliances"]["blue"]["score"]-match["alliances"]["red"]["score"]])
-    info = [teams,list((wks.acell("B2").value).split(",")),list((wks.acell("C2").value).split(",")),list((wks.acell("D2").value).split(",")),list((wks.acell("E2").value).split(",")),list((wks.acell("F2").value).split(",")),list((wks.acell("G2").value).split(","))]
+        scores.append(match["score_breakdown"])
+        #scores.append([match["alliances"]["red"]["team_keys"][0],match["alliances"]["red"]["team_keys"][1],match["alliances"]["red"]["team_keys"][2],match["alliances"]["red"]["score"]-match["alliances"]["blue"]["score"]])
+        #scores.append([match["alliances"]["blue"]["team_keys"][0],match["alliances"]["blue"]["team_keys"][1],match["alliances"]["blue"]["team_keys"][2],match["alliances"]["blue"]["score"]-match["alliances"]["red"]["score"]])
+    #info = [teams,list((wks.acell("B2").value).split(",")),list((wks.acell("C2").value).split(",")),list((wks.acell("D2").value).split(",")),list((wks.acell("E2").value).split(",")),list((wks.acell("F2").value).split(",")),list((wks.acell("G2").value).split(","))]
     scoreData = pandas.DataFrame(data = scores)
-    oprData = pandas.DataFrame(data = info)
-    return(scoreData,oprData)
-#print(thing())
+    #oprData = pandas.DataFrame(data = info)
+    return(scoreData)
+print(thing())
